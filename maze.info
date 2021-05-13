@@ -1,0 +1,139 @@
+Kai Kramer--CSC122-001
+The formal name of this Project is "Help! I'm trapped in here!"
+
+Base Value: --------------------------------------------------:(Level  10)
+
+Options: add doors, false walls, and windows -----------------:(Level 1.5)
+         allow large maze ------------------------------------:(Level 2.5)
+            - map stays centered -----------------------------:(Level 0.5)
+         Light mechanic --------------------------------------:(Level 2.5)
+            - light is circular, not square ------------------:(Level 2.5)
+            - light does not penetrate solids ----------------:(Level  2 )
+         Add procedurality to maze generation ----------------:(Level  4 )
+                                                             --------------
+Total:                                                        (Level  24.5)
+
+I procedurally generated a single-floor maze, with dummy prototype enemies.
+I then constructed a rectangle around the player, which can scroll through the
+maze. This allows for the maze to be on indefinite size. The player starts in
+the top-leftmost room, and the exit is located in the bottom-leftmost room.
+
+The controls are as follows:
+
+w, W, 1 --> Move upwards, if possible.
+a, A, 2 --> Move leftwards, " ".
+s, S, 3 --> Move downwards, " ".
+d, D, 4 --> Move rightwards, " ".
+m, M    --> View map.
+      Note: map will only render properly if console width is large enough
+            to fit the preset map width. Default is 80Chars long, 40Chars tall.
+            
+            having height be half of width results in a square map.
+
+This isn't extra credit. Probably
+
+
+\-=={_Progress log_}==-/
+02 DEC 2019|     Started work on project, 1 week behind expectations.
+             I've been preoccupied with Speech and my college application essays
+             I have serious doubts as to whether or not I can finish.
+             
+                Have added in the rudimentary building blocks. Literally just
+             walls, doors, and floors. Much of the time spent was on coloring,
+             but I have also created a system to simplify ANSI escape coloring.
+             Closed doors are brown, open ones are dark grey. The background of
+             everything is black. Walls are (not bright) white.
+             
+             |into 03 DEC 2019 (~5:30AM)
+                I have looked into generating levels with a BSP tree but I can't
+             really wrap my head around how to do so just yet... 
+             
+                Fixed general inheritance structure, ate a lot of chex mix. 
+             Today's progress seems to be limited to: 
+                    building blocks being done (floor, wall, door, window, etc)
+                    my own coloring system was streamlined
+                    set up a to-do list for myself
+                    
+                conclusion: Today was more of a research day, if anything. Vague
+             ideas as to how I should go about building dungeon levels are
+             starting to surface. I have a (very) rudimentary graphics engine,
+             I do not think that a simple game engine will take too long to
+             implement. If I can't figure out BSP levelgen OR a simple game
+             engine out by tomorrow, I will mothball this project. I really look
+             forward to be able to make my own game. Little kid me always wanted
+             to do that. Current day me is terrified of the gaming industry as 
+             a whole, and would prefer the world of cyber security. Maybe I'll
+             end up being a high-level hacker in our dystopian cyberpunk future.
+             
+03 DEC 2019|    Started today off by researching up on BSP(Bin. Space Partition)
+             Trees. Found a guide written for making flash games, in (get ready
+             for this) ActionScript3. Following just the basic procedure, as 
+             ActionScript3 has rendering tools and (seemingly) no pointers. I
+             also figured out how to (loosely) implement a Draw(); function. 
+             Also figured out what I'm doing with pointers a little bit more.
+             
+                Currently like 5:00AM as of this writing, I still have doubts as
+             to whether I can get this done or not, but I'm practically done
+             with rendering a randomly generated level! I am planning on storing 
+             entities in a linked list through the vector<vector<Tile*> > that
+             I store the map on, so that the game remembers that a door is still
+             a door, even after an entity passes through it. This also allows me
+             to update entities without worrying about tile updates.
+             
+04 DEC 2019|    The fatigue of the past few days got the better of me. I did not
+             attend any classes today. I went to sleep at ~6:30AM sunday night
+             (monday morning?) and ~6:00AM Monday night, and ~6:00AM again last
+             night. I plan on finishing the BSP Tree generation code and then
+             writing a function to write the room layout to some 2D-array.
+             This will most likely be in the form of a vector<vector<Tile*> >.
+             
+             |into 05 DEC 2019 (6:15AM)
+                I have finished writing everything detailed above. I have yet to 
+             see if it compiles or even runs properly. One major challenge I
+             (potentially) solved is: How the heck do I chisel out all of the
+             rooms and corridors that are being spawned? I settled on sticking
+             the aforementioned 2d Vector<Tile*> inside of a class Dungeon.
+             1 Dungeon class represents 1 "depth" in the overall maze. This
+             makes it so that managing multiple floors should not be too hard.
+             I also wrote the class in such a way that it is extensible; If I 
+             wanted to add in, say, patches of grass or large chasms, the 
+             process is as follows:
+                -Add in the logic for X during the recursion of BSP-tree.
+                    ~currently, 2 rooms are generated, and a connecting corridor
+                     is created right then and there, in Sector::createSectors()
+                -Add a corresponding vector to the Dungeon class
+                    -> vector<grassPatch>
+                -Add in building logic (precedence likely after corridors added)
+                
+                I really, really, really hope it works. It is not 6:25 and I
+             ache for rest. If it doesn't compile, I will debug tomorrow.
+            
+             Here goes...
+             ...
+             .../sigh/
+             The list of errors is roughly one yard long. Looks like sloppy code.
+             goddamnit, this is quite the roadblock.
+
+05 DEC 2019|    I did it. Not perfectly, but it's random. Before obsessing over
+             its geometry, I should really implement the player and FOV and all
+             that fun stuff. Certainly more fun that the ~8 hours of debugging
+             that it took me to get it working. I was trying to dynamically
+             allocate and deallocate a class inheritance structure within a 
+             vector, which turned out to be a HUGE task to undertake. Apparently
+             copying an owned pointer is a big no-no, and getting around that is
+             irksome. I delved deep into cppreference and looked at
+             std::unique_ptr and std::move, to try and finagle it to get it to
+             work.
+             
+                That took too long, and I have a hard deadline here. I went back
+             and thunk on it, and decided to ditch the whole inheritance. Tile
+             is now a class with an `enum class` in it which gives me names for
+             each type of Tile. I then have special functions that only work
+             if its name (Tile_T) matches the type of tile--open() will complain
+             if it's called on a non-door (noexcept guarantee hehe)
+             
+                Anyways, it is 7:15AM at the time of this writing, and I have a
+             Physics lab at 1, so I have to sleep. Till later today, before I 
+             start work on my sweet child. 
+             
+06 DEC 2019|    --Nothing written from here on out--
